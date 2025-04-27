@@ -1,4 +1,5 @@
 import 'package:blood_donation_app/pages/auth/login.dart';
+import 'package:blood_donation_app/pages/splash/First.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,7 +19,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Login(),
+      home: Scaffold(
+        body: BodySplash(),
+      ),
     );
   }
 }
