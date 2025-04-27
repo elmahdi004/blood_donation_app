@@ -56,7 +56,7 @@ class _BodySplashState extends State<BodySplash> {
       body: Column(
         children: [
           Expanded(
-            flex: 3,
+            flex: 4,
             child: Container(
                 child: Center(
                     child: PageView.builder(
@@ -70,15 +70,15 @@ class _BodySplashState extends State<BodySplash> {
                           return Column(
                             // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              // const SizedBox(
-                              //   height: 40,
-                              // ),
+                              const SizedBox(
+                                height: 25,
+                              ),
                               Image.asset(
                                 '${splashs[index]["image"]}',
                                 height: 270,
                               ),
                               const SizedBox(
-                                height: 15,
+                                height: 30,
                               ),
                               Text(
                                 "${splashs[index]["title"]}",
