@@ -1,4 +1,6 @@
+import 'package:blood_donation_app/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:blood_donation_app/pages/home/home_page.dart';
 
 class AddressPage extends StatefulWidget {
   const AddressPage({super.key});
@@ -19,7 +21,7 @@ class _AddressPageState extends State<AddressPage> {
             // App Bar with Back Button and Title
             Container(
               padding: const EdgeInsets.all(16),
-              color: const Color(0xFFDC2E2E),
+              color: mainColor,
               child: Column(
                 children: [
                   Row(
@@ -71,7 +73,7 @@ class _AddressPageState extends State<AddressPage> {
             ),
             Expanded(
               child: Container(
-                color: const Color(0xFFDC2E2E),
+                color: mainColor,
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
@@ -160,7 +162,14 @@ class _AddressPageState extends State<AddressPage> {
                               height: 50,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  // Add navigation to next page
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const HomePage(),
+                                    ),
+                                    (route) =>
+                                        false, // This removes all previous routes
+                                  );
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFDC2E2E),
@@ -252,7 +261,15 @@ class _AddressPageState extends State<AddressPage> {
                                   height: 50,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      // Add navigation to next page
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HomePage(),
+                                        ),
+                                        (route) =>
+                                            false, // This removes all previous routes
+                                      );
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFFDC2E2E),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:blood_donation_app/pages/auth/signup/otp.dart';
 
 const mainColor = Color(0xFFD32F2F); // red main color
 
@@ -203,7 +204,15 @@ class CreateAccountPage extends StatelessWidget {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const OtpVerificationPage(),
+                                ),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: mainColor,
                               shape: StadiumBorder(),
