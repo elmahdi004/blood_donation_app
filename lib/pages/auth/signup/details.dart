@@ -36,6 +36,27 @@ class CreateAccountPage extends StatelessWidget {
       ),
       body: Column(
         children: [
+          Container(
+            color: mainColor,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                4,
+                (index) => Container(
+                  width: 60,
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    color: index == 0
+                        ? Colors.white
+                        : Colors.white.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+            ),
+          ),
           Expanded(
             flex: 1,
             child: Stack(

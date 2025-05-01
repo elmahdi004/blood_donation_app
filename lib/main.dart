@@ -1,4 +1,7 @@
+import 'package:blood_donation_app/pages/auth/signup/address.dart';
+import 'package:blood_donation_app/pages/auth/signup/details.dart';
 import 'package:blood_donation_app/pages/auth/signup/otp.dart';
+import 'package:blood_donation_app/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,6 +21,6 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const OtpVerificationPage());
+        home: const AddressPage());
   }
 }
