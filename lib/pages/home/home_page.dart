@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:blood_donation_app/constants.dart';
+import 'package:blood_donation_app/widgets/donor_details_modal.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,32 +13,59 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
 
   // Dummy data for demonstration
-  final List<Map<String, dynamic>> _donors = [
+  final List<Map<String, String>> _donors = [
     {
       'name': 'EL Mahdi bellaziz',
-      'description': 'Hi there my name is elmahdi Hi there my name is elmahdi',
+      'description': 'Active blood donor with 5+ donations',
       'bloodType': 'B+',
-      'image': 'assets/images/profile_placeholder.png',
+      'image': 'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c',
+      'address': 'Dr lamrahate Cr Saadla safi',
+      'mobileNumber': '+212 619664459',
+      'status': 'Ready for Donate'
     },
     {
-      'name': 'EL Mahdi bellaziz',
-      'description': 'Hi there my name is elmahdi Hi there my name is elmahdi',
-      'bloodType': 'B+',
-      'image': 'assets/images/profile_placeholder.png',
+      'name': 'Sarah Johnson',
+      'description': 'Regular donor, available for emergency donations',
+      'bloodType': 'A-',
+      'image': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80',
+      'address': 'Rue Hassan II, Quartier Administratif, Safi',
+      'mobileNumber': '+212 622334455',
+      'status': 'Ready for Donate'
     },
     {
-      'name': 'EL Mahdi bellaziz',
-      'description': 'Hi there my name is elmahdi Hi there my name is elmahdi',
-      'bloodType': 'B+',
-      'image': 'assets/images/profile_placeholder.png',
+      'name': 'Ahmed Hassan',
+      'description': 'First-time donor, willing to help',
+      'bloodType': 'O+',
+      'image': 'https://images.unsplash.com/photo-1566492031773-4f4e44671857',
+      'address': 'Avenue Mohammed V, Route Principale, Safi',
+      'mobileNumber': '+212 633445566',
+      'status': 'Available on Weekends'
     },
     {
-      'name': 'EL Mahdi bellaziz',
-      'description': 'Hi there my name is elmahdi Hi there my name is elmahdi',
-      'bloodType': 'B+',
-      'image': 'assets/images/profile_placeholder.png',
+      'name': 'Maria Garcia',
+      'description': 'Regular blood donor since 2020',
+      'bloodType': 'AB+',
+      'image': 'https://images.unsplash.com/photo-1544005313-94ddf0286df2',
+      'address': 'Lot Riad Salam, Rue 12, Safi',
+      'mobileNumber': '+212 644556677',
+      'status': 'Ready for Donate'
     },
   ];
+
+  void _showDonorDetails(Map<String, dynamic> donor) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DonorDetailsModal(
+        name: donor['name'],
+        address: donor['address'],
+        mobileNumber: donor['mobileNumber'],
+        status: donor['status'],
+        imageUrl: donor['image'],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,9 +192,11 @@ class _HomePageState extends State<HomePage> {
                                 decoration: BoxDecoration(
                                   color: Colors.grey[200],
                                   borderRadius: BorderRadius.circular(8),
+                                  image: DecorationImage(
+                                    image: NetworkImage(donor['image']!),
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                                child: const Icon(Icons.person,
-                                    size: 40, color: Colors.grey),
                               ),
                               const SizedBox(width: 16),
                               // Name and Description
@@ -174,14 +205,14 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      donor['name'],
+                                      donor['name']!,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
                                     ),
                                     Text(
-                                      donor['description'],
+                                      donor['description']!,
                                       style: TextStyle(
                                         color: Colors.grey[600],
                                         fontSize: 14,
@@ -201,9 +232,9 @@ class _HomePageState extends State<HomePage> {
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
-                                  donor['bloodType'],
-                                  style: const TextStyle(
-                                    color: Color(0xFFDC2E2E),
+                                  donor['bloodType']!,
+                                  style: TextStyle(
+                                    color: mainColor,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -216,9 +247,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Expanded(
                                 child: OutlinedButton(
-                                  onPressed: () {
-                                    // Add view details functionality
-                                  },
+                                  onPressed: () => _showDonorDetails(donor),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: Colors.black54,
                                     side:
@@ -230,9 +259,7 @@ class _HomePageState extends State<HomePage> {
                               const SizedBox(width: 16),
                               Expanded(
                                 child: OutlinedButton(
-                                  onPressed: () {
-                                    // Add request for donates functionality
-                                  },
+                                  onPressed: () => _showDonorDetails(donor),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: Colors.black54,
                                     side:
