@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:blood_donation_app/constants.dart';
 import 'package:blood_donation_app/widgets/donor_details_modal.dart';
+import 'package:blood_donation_app/pages/home/notification_page.dart';
+import 'package:blood_donation_app/pages/home/custom_drawer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -70,6 +72,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const CustomDrawer(),
       body: SafeArea(
         child: Column(
           children: [
@@ -82,11 +85,13 @@ class _HomePageState extends State<HomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.menu, color: Colors.white),
-                        onPressed: () {
-                          // Add menu functionality
-                        },
+                      Builder(
+                        builder: (context) => IconButton(
+                          icon: const Icon(Icons.menu, color: Colors.white),
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                        ),
                       ),
                       const Text(
                         'Home',
@@ -100,7 +105,12 @@ class _HomePageState extends State<HomePage> {
                         icon: const Icon(Icons.notifications,
                             color: Colors.white),
                         onPressed: () {
-                          // Add notification functionality
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NotificationPage(),
+                            ),
+                          );
                         },
                       ),
                     ],
