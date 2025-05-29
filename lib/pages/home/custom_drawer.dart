@@ -1,3 +1,4 @@
+import 'package:blood_donation_app/pages/splash/First.dart';
 import 'package:flutter/material.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -28,27 +29,27 @@ class CustomDrawer extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  Column(
+                  const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CircleAvatar(
                         radius: 36,
                         backgroundImage: NetworkImage(
-                          'https://randomuser.me/api/portraits/women/44.jpg',
+                          'https://randomuser.me/api/portraits/men/44.jpg',
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Farjana Afrin',
+                      SizedBox(height: 12),
+                      Text(
+                        'El Mahdi Bellaziz',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'farjana622@gmail.com',
+                      SizedBox(height: 4),
+                      Text(
+                        'elmahdi.bellaziz@gmail.com',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
@@ -87,21 +88,28 @@ class CustomDrawer extends StatelessWidget {
             // Logout Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.logout, color: Color(0xFFDC2E2E)),
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BodySplash(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.logout, color: Colors.black54),
                 label: const Text(
                   'Logout',
-                  style: TextStyle(color: Color(0xFFDC2E2E)),
+                  style: TextStyle(color: Colors.black54),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  elevation: 0,
-                  side: const BorderSide(color: Color(0xFFDC2E2E)),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.black26),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 12),
+                  backgroundColor: Colors.transparent,
+                  minimumSize: const Size.fromHeight(48),
                 ),
               ),
             ),
@@ -150,10 +158,15 @@ class CustomDrawer extends StatelessWidget {
 
   Widget _drawerItem(IconData icon, String title, {VoidCallback? onTap}) {
     return ListTile(
-      leading: Icon(icon, color: Colors.black54),
-      title: Text(
-        title,
-        style: const TextStyle(fontSize: 16, color: Colors.black87),
+      title: Row(
+        children: [
+          Icon(icon, color: Colors.black54),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 16, color: Colors.black87),
+          ),
+        ],
       ),
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24),

@@ -1,6 +1,9 @@
-import 'package:blood_donation_app/constants.dart';
+import 'package:blood_donation_app/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:blood_donation_app/pages/auth/signup/details.dart';
+import 'package:blood_donation_app/services/api_service.dart';
+// import 'package:blood_donation_app/pages/home/home.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -10,6 +13,72 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _apiService = ApiService();
+  bool _isLoading = false;
+  bool _rememberMe = true;
+  bool _obscurePassword = true;
+
+  Future<void> _login() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final data = await _apiService.mobileLogin(
+        _emailController.text,
+        _passwordController.text,
+      );
+
+      if (!mounted) return;
+
+      // Navigate based on user role
+      // if (data['type'] == 'donneur') {
+      //   Navigator.pushReplacementNamed(context, '/donor_home');
+      // } else if (data['type'] == 'receveur') {
+      //   Navigator.pushReplacementNamed(context, '/receiver_home');
+      // }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomePage(),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,6 +155,8 @@ class _LoginState extends State<Login> {
                     child: Column(
                       children: [
                         TextField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             prefixIcon: Icon(Icons.email_outlined),
                             hintText: 'Email',
@@ -99,10 +170,22 @@ class _LoginState extends State<Login> {
                         ),
                         const SizedBox(height: 20),
                         TextField(
-                          obscureText: true,
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
                           decoration: InputDecoration(
                             prefixIcon: Icon(Icons.lock_outline),
-                            suffixIcon: Icon(Icons.visibility_off),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                            ),
                             hintText: 'Password',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
@@ -116,8 +199,12 @@ class _LoginState extends State<Login> {
                         Row(
                           children: [
                             Checkbox(
-                              value: true,
-                              onChanged: (value) {},
+                              value: _rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rememberMe = value ?? true;
+                                });
+                              },
                               activeColor: mainColor,
                             ),
                             const Text('Remember me'),
@@ -136,16 +223,19 @@ class _LoginState extends State<Login> {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: _isLoading ? null : _login,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: mainColor,
                               shape: StadiumBorder(),
                             ),
-                            child: const Text(
-                              'Sign In',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white),
-                            ),
+                            child: _isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white)
+                                : const Text(
+                                    'Sign In',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white),
+                                  ),
                           ),
                         ),
                       ],
@@ -154,15 +244,29 @@ class _LoginState extends State<Login> {
                   const SizedBox(height: 20),
                   Center(
                     child: RichText(
-                      text: const TextSpan(
-                        text: "Don’t have an account? ",
-                        style: TextStyle(color: Colors.black54, fontSize: 16),
+                      text: TextSpan(
+                        text: "Don't have an account? ",
+                        style: const TextStyle(
+                            color: Colors.black54, fontSize: 16),
                         children: [
-                          TextSpan(
-                            text: "Sign Up!",
-                            style: TextStyle(
-                              color: mainColor,
-                              fontWeight: FontWeight.bold,
+                          WidgetSpan(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const CreateAccountPage(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                "Sign Up!",
+                                style: TextStyle(
+                                  color: mainColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ],
