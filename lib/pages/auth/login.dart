@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:blood_donation_app/pages/auth/signup/details.dart';
 import 'package:blood_donation_app/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:blood_donation_app/pages/home/home.dart';
 
 class Login extends StatefulWidget {
@@ -13,59 +14,48 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _apiService = ApiService();
+  late final ApiService _apiService;
   bool _isLoading = false;
   bool _rememberMe = true;
   bool _obscurePassword = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApiService();
+  }
+
+  Future<void> _initializeApiService() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _apiService = ApiService(prefs);
+    });
+  }
 
   Future<void> _login() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in all fields'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final data = await _apiService.mobileLogin(
-        _emailController.text,
-        _passwordController.text,
-      );
-
-      if (!mounted) return;
-
-      // Navigate based on user role
-      // if (data['type'] == 'donneur') {
-      //   Navigator.pushReplacementNamed(context, '/donor_home');
-      // } else if (data['type'] == 'receveur') {
-      //   Navigator.pushReplacementNamed(context, '/receiver_home');
-      // }
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      if (mounted) {
+      try {
+        await _apiService.mobileLogin(
+          _emailController.text,
+          _passwordController.text,
+        );
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } catch (e) {
         setState(() {
+          _error = e.toString();
           _isLoading = false;
         });
       }
@@ -154,45 +144,70 @@ class _LoginState extends State<Login> {
                     ),
                     child: Column(
                       children: [
-                        TextField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.email_outlined),
-                            hintText: 'Email',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: const Color(0xFFF5F5F5),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        TextField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock_outline),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your email';
+                                  }
+                                  if (!value.contains('@')) {
+                                    return 'Please enter a valid email';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.email_outlined),
+                                  hintText: 'Email',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  filled: true,
+                                  fillColor: const Color(0xFFF5F5F5),
+                                ),
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                            ),
-                            hintText: 'Password',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: const Color(0xFFF5F5F5),
+                              const SizedBox(height: 20),
+                              TextFormField(
+                                controller: _passwordController,
+                                obscureText: _obscurePassword,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your password';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.lock_outline),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                                  ),
+                                  hintText: 'Password',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  filled: true,
+                                  fillColor: const Color(0xFFF5F5F5),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 10),
