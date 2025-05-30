@@ -3,6 +3,7 @@ import 'package:blood_donation_app/constants.dart';
 import 'package:blood_donation_app/widgets/donor_details_modal.dart';
 import 'package:blood_donation_app/pages/home/custom_drawer.dart';
 import 'package:blood_donation_app/services/api_service.dart';
+import 'package:blood_donation_app/services/blood_request_service.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   late final ApiService _apiService;
+  late final BloodRequestService _bloodRequestService;
   List<Map<String, dynamic>> _requests = [];
   List<Map<String, dynamic>> _filteredRequests = [];
   bool _isLoading = true;
@@ -52,6 +54,7 @@ class _HomePageState extends State<HomePage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _apiService = ApiService(prefs);
+      _bloodRequestService = BloodRequestService(prefs);
     });
     _loadRequests();
   }
@@ -381,7 +384,7 @@ class _HomePageState extends State<HomePage> {
                             selectedBloodGroup,
                           )) {
                             try {
-                              await _apiService.requestBloodDonation(
+                              await _bloodRequestService.requestBloodDonation(
                                 groupeSanguin: selectedBloodGroup!,
                                 urgent: isUrgent,
                                 quantite: int.parse(quantiteController.text),
@@ -558,6 +561,151 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showPropositionModal(Map<String, dynamic> request) {
+    final TextEditingController dateController = TextEditingController();
+    final TextEditingController timeController = TextEditingController();
+    final TextEditingController messageController = TextEditingController();
+    DateTime? selectedDate;
+    TimeOfDay? selectedTime;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Accept Blood Request'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Please provide the following details to accept this request:',
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 20),
+                // Date Picker
+                TextFormField(
+                  controller: dateController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Donation Date',
+                    suffixIcon: const Icon(Icons.calendar_today),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onTap: () async {
+                    final date = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now().add(const Duration(days: 1)),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 30)),
+                    );
+                    if (date != null) {
+                      selectedDate = date;
+                      dateController.text =
+                          '${date.day}/${date.month}/${date.year}';
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                // Time Picker
+                TextFormField(
+                  controller: timeController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Donation Time',
+                    suffixIcon: const Icon(Icons.access_time),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onTap: () async {
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (time != null) {
+                      selectedTime = time;
+                      timeController.text = time.format(context);
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                // Message
+                TextFormField(
+                  controller: messageController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: 'Additional Message (Optional)',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (selectedDate == null || selectedTime == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please select both date and time'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
+
+                try {
+                  await _apiService.sendProposition(
+                    requestId: request['id'],
+                    date: selectedDate!,
+                    time: selectedTime!,
+                    message: messageController.text.isEmpty
+                        ? null
+                        : messageController.text,
+                  );
+
+                  if (!mounted) return;
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Proposition sent successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                  // Refresh the requests list
+                  _loadRequests();
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString()),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: mainColor,
+              ),
+              child: const Text(
+                'Send Proposition',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -862,9 +1010,9 @@ class _HomePageState extends State<HomePage> {
                                             const SizedBox(width: 16),
                                             Expanded(
                                               child: ElevatedButton(
-                                                onPressed: () {
-                                                  // Add accept request functionality
-                                                },
+                                                onPressed: () =>
+                                                    _showPropositionModal(
+                                                        request),
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: mainColor,
                                                 ),

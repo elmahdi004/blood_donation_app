@@ -1,176 +1,150 @@
-import 'package:blood_donation_app/pages/splash/First.dart';
+import 'package:blood_donation_app/pages/auth/login.dart';
 import 'package:flutter/material.dart';
+import 'package:blood_donation_app/constants.dart';
+import 'package:blood_donation_app/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
+
+  @override
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+  late final ApiService _apiService;
+  Map<String, dynamic>? _user;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApiService();
+  }
+
+  Future<void> _initializeApiService() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _apiService = ApiService(prefs);
+    });
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final user = await _apiService.authService.getAuthenticatedUser();
+      setState(() {
+        _user = user;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print('Error loading user data: $e');
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    try {
+      await _apiService.authService.logout();
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const Login()));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error logging out: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(32),
-          bottomRight: Radius.circular(32),
-        ),
-      ),
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Profile Section
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-              decoration: const BoxDecoration(
-                color: Color(0xFFDC2E2E),
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(32),
-                ),
-              ),
-              child: Stack(
-                children: [
-                  const Column(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: mainColor,
+            ),
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.white))
+                : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CircleAvatar(
-                        radius: 36,
-                        backgroundImage: NetworkImage(
-                          'https://randomuser.me/api/portraits/men/44.jpg',
+                        radius: 30,
+                        backgroundColor: Colors.white,
+                        child: Text(
+                          _user?['nom']
+                                  ?.toString()
+                                  .substring(0, 1)
+                                  .toUpperCase() ??
+                              'U',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: mainColor,
+                          ),
                         ),
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       Text(
-                        'El Mahdi Bellaziz',
-                        style: TextStyle(
+                        _user?['nom'] + ' ' + _user?['prenom'] ?? 'User',
+                        style: const TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
                           fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 5),
                       Text(
-                        'elmahdi.bellaziz@gmail.com',
-                        style: TextStyle(
+                        _user?['email'] ?? 'user@example.com',
+                        style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
                         ),
                       ),
                     ],
                   ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Menu Items
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  _drawerItem(Icons.person, 'My Profile', onTap: () {}),
-                  _drawerItem(Icons.bar_chart, 'Update Status', onTap: () {}),
-                  _drawerItem(Icons.settings, 'Settings', onTap: () {}),
-                  _drawerItem(Icons.privacy_tip, 'Privacy Policy',
-                      onTap: () {}),
-                  _drawerItem(Icons.feedback, 'Feedback', onTap: () {}),
-                  _drawerItem(Icons.support, 'Support Us', onTap: () {}),
-                  _drawerItem(Icons.info, 'About Us', onTap: () {}),
-                ],
-              ),
-            ),
-            // Logout Button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BodySplash(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.logout, color: Colors.black54),
-                label: const Text(
-                  'Logout',
-                  style: TextStyle(color: Colors.black54),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black26),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  backgroundColor: Colors.transparent,
-                  minimumSize: const Size.fromHeight(48),
-                ),
-              ),
-            ),
-            // App Version and Links
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  SizedBox(height: 8),
-                  Text(
-                    'App Version: 1.0.39(82)',
-                    style: TextStyle(color: Colors.black54, fontSize: 13),
-                  ),
-                  SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        'Privacy Policy',
-                        style: TextStyle(
-                          color: Color(0xFFDC2E2E),
-                          fontSize: 13,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      Text('  |  ', style: TextStyle(color: Colors.black54)),
-                      Text(
-                        'Terms of Service',
-                        style: TextStyle(
-                          color: Color(0xFFDC2E2E),
-                          fontSize: 13,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _drawerItem(IconData icon, String title, {VoidCallback? onTap}) {
-    return ListTile(
-      title: Row(
-        children: [
-          Icon(icon, color: Colors.black54),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 16, color: Colors.black87),
+          ),
+          ListTile(
+            leading: const Icon(Icons.home_outlined),
+            title: const Text('Home'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.history_outlined),
+            title: const Text('Donation History'),
+            onTap: () {
+              // Add navigation to donation history
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings_outlined),
+            title: const Text('Settings'),
+            onTap: () {
+              // Add navigation to settings
+              Navigator.pop(context);
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text('Logout', style: TextStyle(color: Colors.red)),
+            onTap: _handleLogout,
           ),
         ],
       ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-      horizontalTitleGap: 0,
     );
   }
 }

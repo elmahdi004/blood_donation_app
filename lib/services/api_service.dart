@@ -2,12 +2,22 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform, SocketException;
+import 'package:flutter/material.dart' show TimeOfDay;
+import 'auth_service.dart';
+import 'blood_request_service.dart';
+import 'proposition_service.dart';
 
 class ApiService {
   final String baseUrl = 'http://10.0.2.2:8000/api';
   final SharedPreferences _prefs;
+  final AuthService authService;
+  final BloodRequestService bloodRequestService;
+  final PropositionService propositionService;
 
-  ApiService(this._prefs);
+  ApiService(this._prefs)
+      : authService = AuthService(_prefs),
+        bloodRequestService = BloodRequestService(_prefs),
+        propositionService = PropositionService(_prefs);
 
   // Get auth token
   Future<String?> getToken() async {
@@ -238,6 +248,63 @@ class ApiService {
     } catch (e) {
       print('Error creating blood request: $e');
       throw Exception('Failed to create blood request: ${e.toString()}');
+    }
+  }
+
+  // Send proposition for blood request
+  Future<void> sendProposition({
+    required int requestId,
+    required DateTime date,
+    required TimeOfDay time,
+    String? message,
+  }) async {
+    try {
+      final token = await getToken();
+      if (token == null) throw Exception('No token found');
+
+      // Combine date and time into a single datetime string
+      final dateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+
+      final requestBody = {
+        'demande_id': requestId,
+        'date': dateTime
+            .toIso8601String()
+            .substring(0, 16), // Format: YYYY-MM-DDTHH:mm
+        'message': message,
+      };
+
+      print('Sending proposition with data: $requestBody');
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/propositions'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(requestBody),
+      );
+
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode != 201) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          final errors = data['errors'] as Map<String, dynamic>;
+          final firstError = errors.values.first.first;
+          throw Exception(firstError);
+        }
+        throw Exception(data['message'] ?? 'Failed to send proposition');
+      }
+    } catch (e) {
+      print('Error sending proposition: $e');
+      throw Exception('Failed to send proposition: ${e.toString()}');
     }
   }
 }
