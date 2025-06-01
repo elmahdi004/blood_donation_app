@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:blood_donation_app/constants.dart';
 import 'package:blood_donation_app/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:blood_donation_app/pages/blood_banks_map_page.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
@@ -119,6 +120,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
             title: const Text('Home'),
             onTap: () {
               Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.location_on_outlined),
+            title: const Text('Blood Banks Map'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const BloodBanksMapPage()),
+              );
             },
           ),
           ListTile(
