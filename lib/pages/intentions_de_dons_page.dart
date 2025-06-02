@@ -25,6 +25,14 @@ class _IntentionsDeDonsPageState extends State<IntentionsDeDonsPage>
   DateTime? _selectedDate;
   final TextEditingController _notesController = TextEditingController();
   bool _isSubmitting = false;
+  String? _selectedFilter;
+
+  List<Map<String, dynamic>> get _filteredIntentions {
+    if (_selectedFilter == null) return _intentions;
+    return _intentions
+        .where((intention) => intention['groupe_sanguin'] == _selectedFilter)
+        .toList();
+  }
 
   @override
   void initState() {
@@ -385,6 +393,90 @@ class _IntentionsDeDonsPageState extends State<IntentionsDeDonsPage>
     );
   }
 
+  Widget _buildFilterSection() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              'Filtrer par groupe sanguin',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                FilterChip(
+                  label: const Text('Tous'),
+                  selected: _selectedFilter == null,
+                  onSelected: (selected) {
+                    setState(() {
+                      _selectedFilter = null;
+                    });
+                  },
+                  backgroundColor: Colors.grey.shade100,
+                  selectedColor: mainColor.withOpacity(0.2),
+                  checkmarkColor: mainColor,
+                  labelStyle: TextStyle(
+                    color: _selectedFilter == null ? mainColor : Colors.black87,
+                    fontWeight: _selectedFilter == null
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ...['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+                    .map((bloodType) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      label: Text(bloodType),
+                      selected: _selectedFilter == bloodType,
+                      onSelected: (selected) {
+                        setState(() {
+                          _selectedFilter = selected ? bloodType : null;
+                        });
+                      },
+                      backgroundColor: Colors.grey.shade100,
+                      selectedColor: mainColor.withOpacity(0.2),
+                      checkmarkColor: mainColor,
+                      labelStyle: TextStyle(
+                        color: _selectedFilter == bloodType
+                            ? mainColor
+                            : Colors.black87,
+                        fontWeight: _selectedFilter == bloodType
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -393,6 +485,7 @@ class _IntentionsDeDonsPageState extends State<IntentionsDeDonsPage>
         elevation: 0,
         backgroundColor: mainColor,
         centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           'Intentions de Dons',
           style: TextStyle(
@@ -630,7 +723,10 @@ class _IntentionsDeDonsPageState extends State<IntentionsDeDonsPage>
                                               groupeSanguin:
                                                   _selectedBloodType!,
                                               dateDisponibilite: _selectedDate!,
-                                              notes: _notesController.text,
+                                              notes:
+                                                  _notesController.text.isEmpty
+                                                      ? null
+                                                      : _notesController.text,
                                             );
 
                                             if (mounted) {
@@ -649,9 +745,22 @@ class _IntentionsDeDonsPageState extends State<IntentionsDeDonsPage>
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                 SnackBar(
-                                                  content: Text(
-                                                      'Erreur: ${e.toString()}'),
+                                                  content: Text(e
+                                                      .toString()
+                                                      .replaceAll(
+                                                          'Exception: ', '')),
                                                   backgroundColor: Colors.red,
+                                                  duration: const Duration(
+                                                      seconds: 5),
+                                                  action: SnackBarAction(
+                                                    label: 'OK',
+                                                    textColor: Colors.white,
+                                                    onPressed: () {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .hideCurrentSnackBar();
+                                                    },
+                                                  ),
                                                 ),
                                               );
                                             }
@@ -740,320 +849,380 @@ class _IntentionsDeDonsPageState extends State<IntentionsDeDonsPage>
                     ],
                   ),
                 )
-              : _intentions.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.bloodtype_outlined,
-                            size: 80,
-                            color: Colors.grey.shade400,
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            'Aucune intention de don',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.grey.shade600,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Commencez par ajouter votre première intention de don',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade500,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 24),
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              final result = await Navigator.pushNamed(
-                                context,
-                                '/create-intention-don',
-                              );
-                              if (result == true) {
-                                _loadIntentions();
-                              }
-                            },
-                            icon: const Icon(Icons.add),
-                            label: const Text('Ajouter une intention'),
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 12,
+              : Column(
+                  children: [
+                    _buildFilterSection(),
+                    Expanded(
+                      child: _intentions.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.bloodtype_outlined,
+                                    size: 80,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Text(
+                                    _selectedFilter != null
+                                        ? 'Aucune intention de don pour le groupe ${_selectedFilter}'
+                                        : 'Aucune intention de don',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.grey.shade600,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    _selectedFilter != null
+                                        ? 'Essayez un autre groupe sanguin'
+                                        : 'Commencez par ajouter votre première intention de don',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey.shade500,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 24),
+                                  ElevatedButton.icon(
+                                    onPressed: () async {
+                                      final result = await Navigator.pushNamed(
+                                        context,
+                                        '/create-intention-don',
+                                      );
+                                      if (result == true) {
+                                        _loadIntentions();
+                                      }
+                                    },
+                                    icon: const Icon(Icons.add),
+                                    label: const Text('Ajouter une intention'),
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadIntentions,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _intentions.length,
-                        itemBuilder: (context, index) {
-                          final intention = _intentions[index];
-                          final date =
-                              DateTime.parse(intention['date_disponibilite']);
-                          final formattedDate =
-                              DateFormat('EEEE d MMMM yyyy', 'fr_FR')
-                                  .format(date);
-                          final user = intention['user'];
+                            )
+                          : RefreshIndicator(
+                              onRefresh: _loadIntentions,
+                              child: ListView.builder(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: _filteredIntentions.length,
+                                itemBuilder: (context, index) {
+                                  final intention = _filteredIntentions[index];
+                                  final date = DateTime.parse(
+                                      intention['date_disponibilite']);
+                                  final formattedDate =
+                                      DateFormat('EEEE d MMMM yyyy', 'fr_FR')
+                                          .format(date);
+                                  final user = intention['user'];
 
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  // TODO: Navigate to intention details
-                                },
-                                borderRadius: BorderRadius.circular(20),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: intention['valide']
-                                                    ? [
-                                                        Colors.green.shade400,
-                                                        Colors.green.shade600
-                                                      ]
-                                                    : [
-                                                        Colors.orange.shade400,
-                                                        Colors.orange.shade600
-                                                      ],
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  intention['valide']
-                                                      ? Icons.check_circle
-                                                      : Icons.pending,
-                                                  color: Colors.white,
-                                                  size: 16,
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  intention['valide']
-                                                      ? 'Validé'
-                                                      : 'En attente',
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 20),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(16),
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.red.shade400,
-                                                  Colors.red.shade600
-                                                ],
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                            ),
-                                            child: Text(
-                                              intention['groupe_sanguin'],
-                                              style: const TextStyle(
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 20),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Text(
-                                                  'Date de disponibilité',
-                                                  style: TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  formattedDate,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 20),
-                                      Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.shade100,
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                  return Container(
+                                    margin: const EdgeInsets.only(bottom: 16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
                                         ),
-                                        child: Row(
-                                          children: [
-                                            CircleAvatar(
-                                              backgroundColor:
-                                                  Colors.blue.shade100,
-                                              child: Text(
-                                                user['nom'][0].toUpperCase(),
-                                                style: TextStyle(
-                                                  color: Colors.blue.shade700,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                      ],
+                                    ),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: () {
+                                          // TODO: Navigate to intention details
+                                        },
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
                                                 children: [
-                                                  Text(
-                                                    '${user['nom']} ${user['prenom']}',
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        colors:
+                                                            intention['valide']
+                                                                ? [
+                                                                    Colors.green
+                                                                        .shade400,
+                                                                    Colors.green
+                                                                        .shade600
+                                                                  ]
+                                                                : [
+                                                                    Colors
+                                                                        .orange
+                                                                        .shade400,
+                                                                    Colors
+                                                                        .orange
+                                                                        .shade600
+                                                                  ],
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Icon(
+                                                          intention['valide']
+                                                              ? Icons
+                                                                  .check_circle
+                                                              : Icons.pending,
+                                                          color: Colors.white,
+                                                          size: 16,
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 4),
+                                                        Text(
+                                                          intention['valide']
+                                                              ? 'Validé'
+                                                              : 'En attente',
+                                                          style:
+                                                              const TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                  const SizedBox(height: 4),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.email_outlined,
-                                                        size: 14,
-                                                        color: Colors
-                                                            .grey.shade600,
+                                                ],
+                                              ),
+                                              const SizedBox(height: 20),
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            16),
+                                                    decoration: BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        colors: [
+                                                          Colors.red.shade400,
+                                                          Colors.red.shade600
+                                                        ],
                                                       ),
-                                                      const SizedBox(width: 4),
-                                                      Text(
-                                                        user['email'],
-                                                        style: TextStyle(
-                                                          color: Colors
-                                                              .grey.shade600,
-                                                          fontSize: 12,
-                                                        ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16),
+                                                    ),
+                                                    child: Text(
+                                                      intention[
+                                                          'groupe_sanguin'],
+                                                      style: const TextStyle(
+                                                        fontSize: 24,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
                                                       ),
-                                                    ],
+                                                    ),
                                                   ),
-                                                  const SizedBox(height: 4),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.phone_outlined,
-                                                        size: 14,
-                                                        color: Colors
-                                                            .grey.shade600,
-                                                      ),
-                                                      const SizedBox(width: 4),
-                                                      Text(
-                                                        user['telephone'] ??
-                                                            'Non renseigné',
-                                                        style: TextStyle(
-                                                          color: Colors
-                                                              .grey.shade600,
-                                                          fontSize: 12,
+                                                  const SizedBox(width: 20),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        const Text(
+                                                          'Date de disponibilité',
+                                                          style: TextStyle(
+                                                            color: Colors.grey,
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                        const SizedBox(
+                                                            height: 4),
+                                                        Text(
+                                                          formattedDate,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      if (intention['notes'] != null) ...[
-                                        const SizedBox(height: 16),
-                                        Container(
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: Colors.amber.shade50,
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            border: Border.all(
-                                              color: Colors.amber.shade200,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.note_alt_outlined,
-                                                color: Colors.amber.shade700,
-                                                size: 20,
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Expanded(
-                                                child: Text(
-                                                  intention['notes'],
-                                                  style: TextStyle(
-                                                    color:
-                                                        Colors.amber.shade900,
-                                                    fontStyle: FontStyle.italic,
-                                                  ),
+                                              const SizedBox(height: 20),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.all(12),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade100,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    CircleAvatar(
+                                                      backgroundColor:
+                                                          Colors.blue.shade100,
+                                                      child: Text(
+                                                        user['nom'][0]
+                                                            .toUpperCase(),
+                                                        style: TextStyle(
+                                                          color: Colors
+                                                              .blue.shade700,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            '${user['nom']} ${user['prenom']}',
+                                                            style:
+                                                                const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 4),
+                                                          Row(
+                                                            children: [
+                                                              Icon(
+                                                                Icons
+                                                                    .email_outlined,
+                                                                size: 14,
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade600,
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 4),
+                                                              Text(
+                                                                user['email'],
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .shade600,
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 4),
+                                                          Row(
+                                                            children: [
+                                                              Icon(
+                                                                Icons
+                                                                    .phone_outlined,
+                                                                size: 14,
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade600,
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 4),
+                                                              Text(
+                                                                user['telephone'] ??
+                                                                    'Non renseigné',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .shade600,
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
+                                              if (intention['notes'] !=
+                                                  null) ...[
+                                                const SizedBox(height: 16),
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.all(12),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.amber.shade50,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    border: Border.all(
+                                                      color:
+                                                          Colors.amber.shade200,
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.note_alt_outlined,
+                                                        color: Colors
+                                                            .amber.shade700,
+                                                        size: 20,
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      Expanded(
+                                                        child: Text(
+                                                          intention['notes'],
+                                                          style: TextStyle(
+                                                            color: Colors
+                                                                .amber.shade900,
+                                                            fontStyle: FontStyle
+                                                                .italic,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
                                             ],
                                           ),
                                         ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
-                          );
-                        },
-                      ),
                     ),
+                  ],
+                ),
     );
   }
 }

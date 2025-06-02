@@ -35,25 +35,41 @@ class IntentionDonService {
     required DateTime dateDisponibilite,
     String? notes,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/intentions-de-dons'),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${_prefs.getString('token')}',
-      },
-      body: json.encode({
-        'groupe_sanguin': groupeSanguin,
-        'date_disponibilite': dateDisponibilite.toIso8601String().split('T')[0],
-        'notes': notes,
-      }),
-    );
+    final token = _prefs.getString('token');
+    if (token == null) {
+      throw Exception(
+          'Vous devez être connecté pour créer une intention de don');
+    }
 
-    if (response.statusCode == 201) {
-      return json.decode(response.body);
-    } else {
-      final error = json.decode(response.body);
-      throw Exception(error['message'] ?? 'Failed to create intention de don');
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/intentions-de-dons'),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'groupe_sanguin': groupeSanguin,
+          'date_disponibilite':
+              dateDisponibilite.toIso8601String().split('T')[0],
+          'notes': notes,
+        }),
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        final error = json.decode(response.body);
+        throw Exception(error['message'] ??
+            'Erreur lors de la création de l\'intention de don');
+      }
+    } catch (e) {
+      print('Error creating intention: $e');
+      throw Exception('Erreur de connexion. Veuillez réessayer.');
     }
   }
 
