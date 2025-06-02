@@ -8,39 +8,47 @@ class BloodRequestService {
 
   BloodRequestService(this._prefs);
 
-  Future<String?> _getToken() async {
-    return _prefs.getString('token');
-  }
+  Future<List<Map<String, dynamic>>> getUserRequests() async {
+    final token = _prefs.getString('token');
+    if (token == null) {
+      throw Exception('Non authentifié');
+    }
 
-  // Get blood requests
-  Future<List<Map<String, dynamic>>> getBloodRequests() async {
     try {
-      final token = await _getToken();
-      if (token == null) throw Exception('No token found');
-
       final response = await http.get(
-        Uri.parse('$baseUrl/blood-requests'),
+        Uri.parse('$baseUrl/demandes/user'),
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
         },
       );
 
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data
-            .map((request) => Map<String, dynamic>.from(request))
-            .toList();
+        final dynamic decodedData = json.decode(response.body);
+        print('Decoded data type: ${decodedData.runtimeType}');
+        print('Decoded data: $decodedData');
+
+        if (decodedData is List) {
+          return List<Map<String, dynamic>>.from(decodedData);
+        } else if (decodedData is Map && decodedData.containsKey('data')) {
+          return List<Map<String, dynamic>>.from(decodedData['data']);
+        } else {
+          print('Unexpected data format: $decodedData');
+          return [];
+        }
       } else {
-        throw Exception('Failed to fetch blood requests');
+        throw Exception(
+            'Erreur lors de la récupération des demandes: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching blood requests: $e');
-      throw Exception('Failed to fetch blood requests: ${e.toString()}');
+      print('Error in getUserRequests: $e');
+      throw Exception('Erreur lors de la récupération des demandes: $e');
     }
   }
 
-  // Request blood donation
   Future<void> requestBloodDonation({
     required String groupeSanguin,
     required bool urgent,
@@ -50,22 +58,8 @@ class BloodRequestService {
     String? message,
   }) async {
     try {
-      print('Starting requestBloodDonation...');
-      final token = await _getToken();
-      print('Token: ${token != null ? 'Found' : 'Not found'}');
+      final token = _prefs.getString('token');
       if (token == null) throw Exception('No token found');
-
-      final requestBody = {
-        'groupe_sanguin': groupeSanguin,
-        'urgent': urgent ? 1 : 0, // Convert boolean to integer for Laravel
-        'quantite': quantite,
-        'ville': ville,
-        'nom_hopital': nomHopital,
-        'message': message,
-      };
-
-      print('Sending blood request with data: $requestBody');
-      print('URL: $baseUrl/blood-requests');
 
       final response = await http.post(
         Uri.parse('$baseUrl/blood-requests'),
@@ -73,24 +67,22 @@ class BloodRequestService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: json.encode(requestBody),
+        body: json.encode({
+          'groupe_sanguin': groupeSanguin,
+          'urgent': urgent,
+          'quantite': quantite,
+          'ville': ville,
+          'nom_hopital': nomHopital,
+          'message': message,
+        }),
       );
-
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       if (response.statusCode != 201) {
         final data = json.decode(response.body);
-        if (data['errors'] != null) {
-          final errors = data['errors'] as Map<String, dynamic>;
-          final firstError = errors.values.first.first;
-          throw Exception(firstError);
-        }
         throw Exception(data['message'] ?? 'Failed to create blood request');
       }
     } catch (e) {
       print('Error creating blood request: $e');
-      print('Error stack trace: ${StackTrace.current}');
       throw Exception('Failed to create blood request: ${e.toString()}');
     }
   }
