@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'auth/login.dart';
 import '../constants.dart';
 import './../env.dart';
+import './appointment_booking_page.dart';
 
 class BloodBanksMapPage extends StatefulWidget {
   const BloodBanksMapPage({Key? key}) : super(key: key);
@@ -174,9 +175,15 @@ class _BloodBanksMapPageState extends State<BloodBanksMapPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: ElevatedButton(
                           onPressed: () {
-                            // TODO: Navigate to appointment page
                             Navigator.pop(context);
-                            // Add navigation to appointment page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AppointmentBookingPage(
+                                  bloodBank: bank,
+                                ),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: mainColor,

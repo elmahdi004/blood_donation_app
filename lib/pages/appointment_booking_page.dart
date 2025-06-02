@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../constants.dart';
+import '../services/appointment_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppointmentBookingPage extends StatefulWidget {
   final Map<String, dynamic> bloodBank;
@@ -20,6 +22,28 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
   DateTime _focusedDay = DateTime.now();
   List<Map<String, dynamic>> _availableSlots = [];
   bool _isLoading = false;
+  late AppointmentService _appointmentService;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeService();
+  }
+
+  Future<void> _initializeService() async {
+    final prefs = await SharedPreferences.getInstance();
+    _appointmentService = AppointmentService(prefs);
+    _loadAvailableSlots(_selectedDay);
+  }
+
+  String _formatTime(String timeString) {
+    // Parse the time string and format it to HH:mm
+    final time = TimeOfDay(
+      hour: int.parse(timeString.split(':')[0]),
+      minute: int.parse(timeString.split(':')[1]),
+    );
+    return time.format(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +126,8 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
                         itemCount: _availableSlots.length,
                         itemBuilder: (context, index) {
                           final slot = _availableSlots[index];
+                          final bool isBooked = slot['is_booked'] == 1;
+
                           return Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             decoration: BoxDecoration(
@@ -123,37 +149,45 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
                               leading: Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: mainColor.withOpacity(0.1),
+                                  color: isBooked
+                                      ? Colors.grey.withOpacity(0.1)
+                                      : mainColor.withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.access_time,
-                                  color: mainColor,
+                                  color: isBooked ? Colors.grey : mainColor,
                                 ),
                               ),
                               title: Text(
-                                '${slot['start_time']} - ${slot['end_time']}',
-                                style: const TextStyle(
+                                '${_formatTime(slot['start_time'])} - ${_formatTime(slot['end_time'])}',
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
+                                  color: isBooked ? Colors.grey : Colors.black,
                                 ),
                               ),
                               subtitle: Text(
-                                '${slot['available_slots']} places disponibles',
+                                isBooked ? 'Créneau réservé' : 'Disponible',
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: isBooked
+                                      ? Colors.grey[600]
+                                      : Colors.green[600],
                                 ),
                               ),
                               trailing: ElevatedButton(
-                                onPressed: () => _bookAppointment(slot),
+                                onPressed: isBooked
+                                    ? null
+                                    : () => _bookAppointment(slot),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: mainColor,
+                                  backgroundColor:
+                                      isBooked ? Colors.grey : mainColor,
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                child: const Text('Réserver'),
+                                child: Text(isBooked ? 'Réservé' : 'Réserver'),
                               ),
                             ),
                           );
@@ -172,30 +206,13 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
     });
 
     try {
-      // TODO: Implement API call to get available slots
-      // For now, using dummy data
-      await Future.delayed(const Duration(seconds: 1));
+      final slots = await _appointmentService.getAvailableSlots(
+        widget.bloodBank['id'],
+        date,
+      );
+
       setState(() {
-        _availableSlots = [
-          {
-            'id': 1,
-            'start_time': '09:00',
-            'end_time': '10:00',
-            'available_slots': 3,
-          },
-          {
-            'id': 2,
-            'start_time': '10:00',
-            'end_time': '11:00',
-            'available_slots': 2,
-          },
-          {
-            'id': 3,
-            'start_time': '11:00',
-            'end_time': '12:00',
-            'available_slots': 1,
-          },
-        ];
+        _availableSlots = slots;
         _isLoading = false;
       });
     } catch (e) {
@@ -233,4 +250,4 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
       );
     }
   }
-} 
+}
