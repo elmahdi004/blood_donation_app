@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import '../constants.dart';
 import '../services/appointment_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,16 +24,18 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
   List<Map<String, dynamic>> _availableSlots = [];
   bool _isLoading = false;
   late AppointmentService _appointmentService;
+  late SharedPreferences _prefs;
 
   @override
   void initState() {
     super.initState();
     _initializeService();
+    initializeDateFormatting('fr_FR', null);
   }
 
   Future<void> _initializeService() async {
-    final prefs = await SharedPreferences.getInstance();
-    _appointmentService = AppointmentService(prefs);
+    _prefs = await SharedPreferences.getInstance();
+    _appointmentService = AppointmentService(_prefs);
     _loadAvailableSlots(_selectedDay);
   }
 
@@ -178,7 +181,7 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
                               trailing: ElevatedButton(
                                 onPressed: isBooked
                                     ? null
-                                    : () => _bookAppointment(slot),
+                                    : () => _showConfirmationModal(slot),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
                                       isBooked ? Colors.grey : mainColor,
@@ -196,6 +199,141 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showConfirmationModal(Map<String, dynamic> slot) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Text(
+              'Confirmer le rendez-vous',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[800],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  _buildDetailRow(
+                    Icons.location_on,
+                    'Centre de don',
+                    widget.bloodBank['name'],
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDetailRow(
+                    Icons.calendar_today,
+                    'Date',
+                    DateFormat('EEEE d MMMM yyyy', 'fr_FR')
+                        .format(_selectedDay),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDetailRow(
+                    Icons.access_time,
+                    'Horaire',
+                    '${_formatTime(slot['start_time'])} - ${_formatTime(slot['end_time'])}',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Annuler',
+                        style: TextStyle(color: Colors.black)),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _bookAppointment(slot);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: mainColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Confirmer',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: mainColor),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -231,23 +369,51 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
 
   Future<void> _bookAppointment(Map<String, dynamic> slot) async {
     try {
-      // TODO: Implement API call to book appointment
+      setState(() => _isLoading = true);
+
+      final userId = _prefs.getInt('user_id');
+      if (userId == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('Veuillez vous connecter pour prendre un rendez-vous'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        Navigator.pop(context); // Return to previous screen
+        return;
+      }
+
+      await _appointmentService.bookAppointment(
+        widget.bloodBank['id'],
+        slot['slot_id'],
+        _selectedDay,
+      );
+
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Rendez-vous réservé avec succès!'),
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pop(context);
+
+      // Refresh the slots list
+      _loadAvailableSlots(_selectedDay);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error booking appointment: ${e.toString()}'),
+          content: Text('Erreur lors de la réservation: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 }

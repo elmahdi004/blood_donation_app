@@ -72,6 +72,8 @@ class ApiService {
         // Store token and user data
         await _prefs.setString('token', data['token']);
         await _prefs.setString('user', json.encode(data['user']));
+        // Save user_id separately for easy access
+        await _prefs.setInt('user_id', data['user']['id']);
         return data;
       } else {
         // Handle validation errors from Laravel
@@ -110,8 +112,10 @@ class ApiService {
         );
       }
     } finally {
-      // Clear local storage regardless of API call success
-      await _prefs.clear();
+      // Clear all stored data
+      await _prefs.remove('token');
+      await _prefs.remove('user');
+      await _prefs.remove('user_id');
     }
   }
 

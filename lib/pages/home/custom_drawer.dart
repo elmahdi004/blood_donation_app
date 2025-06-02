@@ -4,6 +4,8 @@ import 'package:blood_donation_app/constants.dart';
 import 'package:blood_donation_app/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:blood_donation_app/pages/blood_banks_map_page.dart';
+import 'package:blood_donation_app/pages/appointments_history_page.dart';
+import 'package:blood_donation_app/pages/intentions_de_dons_page.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
@@ -136,10 +138,26 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ),
           ListTile(
             leading: const Icon(Icons.history_outlined),
-            title: const Text('Donation History'),
+            title: const Text('My Appointments'),
             onTap: () {
-              // Add navigation to donation history
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AppointmentsHistoryPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.bloodtype_outlined),
+            title: const Text('Intentions de Dons'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const IntentionsDeDonsPage()),
+              );
             },
           ),
           ListTile(
