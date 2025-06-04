@@ -30,20 +30,22 @@ class _HomePageState extends State<HomePage> {
   bool? _urgentOnly;
   final List<Map<String, String>> _notifications = [
     {
-      'message': 'Blood is urgently needed for patients undergoing surgery.',
-      'time': '1h ago',
+      'message':
+          'Du sang est urgemment nécessaire pour les patients en chirurgie.',
+      'time': 'il y a 1h',
     },
     {
-      'message': 'Your last donation was 3 months ago. Ready to donate again?',
-      'time': '2h ago',
+      'message':
+          'Votre dernier don remonte à 3 mois. Prêt à donner à nouveau ?',
+      'time': 'il y a 2h',
     },
     {
-      'message': 'Thank you for being a regular donor!',
-      'time': '5h ago',
+      'message': 'Merci d\'être un donneur régulier !',
+      'time': 'il y a 5h',
     },
     {
-      'message': 'New blood donation camp in your area tomorrow.',
-      'time': '1d ago',
+      'message': 'Nouvelle collecte de sang dans votre région demain.',
+      'time': 'il y a 1j',
     },
   ];
 
@@ -101,15 +103,15 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Filter Requests'),
+          title: const Text('Filtrer les Demandes'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
                 value: _selectedBloodGroup,
-                hint: const Text('Blood Group'),
+                hint: const Text('Groupe Sanguin'),
                 items: [
-                  const DropdownMenuItem(value: null, child: Text('All')),
+                  const DropdownMenuItem(value: null, child: Text('Tous')),
                   ...['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
                       .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                       .toList(),
@@ -121,9 +123,9 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _selectedStatus,
-                hint: const Text('Status'),
+                hint: const Text('Statut'),
                 items: [
-                  const DropdownMenuItem(value: null, child: Text('All')),
+                  const DropdownMenuItem(value: null, child: Text('Tous')),
                   ...['en_attente', 'approuve', 'rejete', 'termine']
                       .map((e) => DropdownMenuItem(
                             value: e,
@@ -138,12 +140,13 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 16),
               DropdownButtonFormField<bool?>(
                 value: _urgentOnly,
-                hint: const Text('Urgency'),
+                hint: const Text('Urgence'),
                 items: const [
-                  DropdownMenuItem(value: null, child: Text('All')),
-                  DropdownMenuItem(value: true, child: Text('Urgent Only')),
+                  DropdownMenuItem(value: null, child: Text('Tous')),
                   DropdownMenuItem(
-                      value: false, child: Text('Non-Urgent Only')),
+                      value: true, child: Text('Urgent uniquement')),
+                  DropdownMenuItem(
+                      value: false, child: Text('Non-urgent uniquement')),
                 ],
                 onChanged: (value) {
                   setState(() => _urgentOnly = value);
@@ -156,14 +159,14 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Cancel'),
+              child: const Text('Annuler'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 _applyFilters();
               },
-              child: const Text('Apply'),
+              child: const Text('Appliquer'),
             ),
           ],
         ),
@@ -190,7 +193,7 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Request Details',
+                  'Détails de la Demande',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -203,16 +206,16 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             const SizedBox(height: 20),
-            _buildDetailRow('Blood Group', request['groupe_sanguin']),
-            _buildDetailRow('Quantity', '${request['quantite']} units'),
-            _buildDetailRow('Hospital', request['nom_hopital']),
-            _buildDetailRow('City', request['ville']),
-            _buildDetailRow('Urgent', request['urgent'] == 1 ? 'Yes' : 'No'),
+            _buildDetailRow('Groupe Sanguin', request['groupe_sanguin']),
+            _buildDetailRow('Quantité', '${request['quantite']} unités'),
+            _buildDetailRow('Hôpital', request['nom_hopital']),
+            _buildDetailRow('Ville', request['ville']),
+            _buildDetailRow('Urgent', request['urgent'] == 1 ? 'Oui' : 'Non'),
             if (request['message'] != null)
               _buildDetailRow('Message', request['message']),
-            _buildDetailRow('Status', _getStatusText(request['status'])),
-            _buildDetailRow('Requested By', request['requester']['name']),
-            _buildDetailRow('Requester Phone', request['requester']['phone']),
+            _buildDetailRow('Statut', _getStatusText(request['status'])),
+            _buildDetailRow('Demandé par', request['requester']['name']),
+            _buildDetailRow('Téléphone', request['requester']['phone']),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
@@ -227,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 child: const Text(
-                  'Accept Request',
+                  'Accepter la Demande',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -307,7 +310,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Request Blood',
+                          'Demander du Sang',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -338,22 +341,22 @@ class _HomePageState extends State<HomePage> {
                     TextField(
                       controller: quantiteController,
                       keyboardType: TextInputType.number,
-                      decoration: _getInputDecoration('Quantity (units)'),
+                      decoration: _getInputDecoration('Quantité (unités)'),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: villeController,
-                      decoration: _getInputDecoration('City'),
+                      decoration: _getInputDecoration('Ville'),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: nomHopitalController,
-                      decoration: _getInputDecoration('Hospital Name'),
+                      decoration: _getInputDecoration('Nom de l\'Hôpital'),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       value: selectedBloodGroup,
-                      hint: const Text('Select Blood Group'),
+                      hint: const Text('Sélectionner le Groupe Sanguin'),
                       items: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
                           .map(
                               (e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -364,7 +367,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 12),
                     SwitchListTile(
-                      title: const Text('Urgent Request'),
+                      title: const Text('Demande Urgente'),
                       value: isUrgent,
                       onChanged: (val) => setState(() => isUrgent = val),
                     ),
@@ -372,8 +375,8 @@ class _HomePageState extends State<HomePage> {
                     TextField(
                       controller: messageController,
                       maxLines: 3,
-                      decoration:
-                          _getInputDecoration('Additional Message (Optional)'),
+                      decoration: _getInputDecoration(
+                          'Message Additionnel (Optionnel)'),
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
@@ -401,8 +404,8 @@ class _HomePageState extends State<HomePage> {
                               Navigator.of(context).pop();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text(
-                                      'Blood request created successfully'),
+                                  content:
+                                      Text('Demande de sang créée avec succès'),
                                   backgroundColor: Colors.green,
                                 ),
                               );
@@ -423,7 +426,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         child: const Text(
-                          'Submit Request',
+                          'Soumettre la Demande',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
@@ -450,7 +453,7 @@ class _HomePageState extends State<HomePage> {
         bloodGroup == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please fill in all required fields'),
+          content: Text('Veuillez remplir tous les champs obligatoires'),
           backgroundColor: Colors.red,
         ),
       );
@@ -486,7 +489,7 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
                     blurRadius: 10,
@@ -504,7 +507,9 @@ class _HomePageState extends State<HomePage> {
                       const Text(
                         'Notifications',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close),
@@ -581,22 +586,21 @@ class _HomePageState extends State<HomePage> {
       barrierDismissible: false,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Accept Blood Request'),
+          title: const Text('Accepter la Demande de Sang'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  'Please provide the following details to accept this request:',
+                  'Veuillez fournir les détails suivants pour accepter cette demande :',
                   style: TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 20),
-                // Date Picker
                 TextFormField(
                   controller: dateController,
                   readOnly: true,
                   decoration: InputDecoration(
-                    labelText: 'Donation Date',
+                    labelText: 'Date de Don',
                     suffixIcon: const Icon(Icons.calendar_today),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -617,12 +621,11 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
                 const SizedBox(height: 16),
-                // Time Picker
                 TextFormField(
                   controller: timeController,
                   readOnly: true,
                   decoration: InputDecoration(
-                    labelText: 'Donation Time',
+                    labelText: 'Heure de Don',
                     suffixIcon: const Icon(Icons.access_time),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -640,12 +643,11 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
                 const SizedBox(height: 16),
-                // Message
                 TextFormField(
                   controller: messageController,
                   maxLines: 3,
                   decoration: InputDecoration(
-                    labelText: 'Additional Message (Optional)',
+                    labelText: 'Message Additionnel (Optionnel)',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -657,14 +659,15 @@ class _HomePageState extends State<HomePage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: const Text('Annuler'),
             ),
             ElevatedButton(
               onPressed: () async {
                 if (selectedDate == null || selectedTime == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Please select both date and time'),
+                      content:
+                          Text('Veuillez sélectionner la date et l\'heure'),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -685,11 +688,10 @@ class _HomePageState extends State<HomePage> {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Proposition sent successfully'),
+                      content: Text('Proposition envoyée avec succès'),
                       backgroundColor: Colors.green,
                     ),
                   );
-                  // Refresh the requests list
                   _loadRequests();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -704,7 +706,7 @@ class _HomePageState extends State<HomePage> {
                 backgroundColor: mainColor,
               ),
               child: const Text(
-                'Send Proposition',
+                'Envoyer la Proposition',
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -721,7 +723,6 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
-            // App Bar with Menu and Notification
             Container(
               padding: const EdgeInsets.all(16),
               color: mainColor,
@@ -739,7 +740,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const Text(
-                        'Blood Requests',
+                        'Demandes de Sang',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -749,14 +750,11 @@ class _HomePageState extends State<HomePage> {
                       IconButton(
                         icon: const Icon(Icons.notifications,
                             color: Colors.white),
-                        onPressed: () {
-                          // Add notifications functionality
-                        },
+                        onPressed: _showNotificationsModal,
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // Search Bar
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
@@ -766,7 +764,7 @@ class _HomePageState extends State<HomePage> {
                     child: TextField(
                       controller: _searchController,
                       decoration: const InputDecoration(
-                        hintText: 'Search by blood group or location',
+                        hintText: 'Rechercher par groupe sanguin ou lieu',
                         border: InputBorder.none,
                         icon: Icon(Icons.search),
                       ),
@@ -775,7 +773,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            // Sort and Filter Buttons
             Expanded(
               child: Column(
                 children: [
@@ -789,7 +786,7 @@ class _HomePageState extends State<HomePage> {
                               // Add sort functionality
                             },
                             icon: const Icon(Icons.sort),
-                            label: const Text('Sort'),
+                            label: const Text('Trier'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.black54,
                               side: const BorderSide(color: Colors.black12),
@@ -804,7 +801,7 @@ class _HomePageState extends State<HomePage> {
                           child: OutlinedButton.icon(
                             onPressed: _showFilterModal,
                             icon: const Icon(Icons.filter_list),
-                            label: const Text('Filter'),
+                            label: const Text('Filtrer'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.black54,
                               side: const BorderSide(color: Colors.black12),
@@ -817,7 +814,6 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
-                  // Requests List
                   Expanded(
                     child: _isLoading
                         ? const Center(child: CircularProgressIndicator())
@@ -834,14 +830,15 @@ class _HomePageState extends State<HomePage> {
                                     const SizedBox(height: 16),
                                     ElevatedButton(
                                       onPressed: _loadRequests,
-                                      child: const Text('Retry'),
+                                      child: const Text('Réessayer'),
                                     ),
                                   ],
                                 ),
                               )
                             : _filteredRequests.isEmpty
                                 ? const Center(
-                                    child: Text('No blood requests found'),
+                                    child:
+                                        Text('Aucune demande de sang trouvée'),
                                   )
                                 : ListView.builder(
                                     padding: const EdgeInsets.symmetric(
@@ -864,7 +861,6 @@ class _HomePageState extends State<HomePage> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  // Blood Group Badge
                                                   Container(
                                                     padding: const EdgeInsets
                                                         .symmetric(
@@ -887,7 +883,6 @@ class _HomePageState extends State<HomePage> {
                                                     ),
                                                   ),
                                                   const SizedBox(width: 12),
-                                                  // Status Badge
                                                   Container(
                                                     padding: const EdgeInsets
                                                         .symmetric(
@@ -916,7 +911,6 @@ class _HomePageState extends State<HomePage> {
                                                   if (request['urgent'] ==
                                                       1) ...[
                                                     const SizedBox(width: 12),
-                                                    // Urgent Badge
                                                     Container(
                                                       padding: const EdgeInsets
                                                           .symmetric(
@@ -999,7 +993,7 @@ class _HomePageState extends State<HomePage> {
                                                       color: Colors.grey),
                                                   const SizedBox(width: 4),
                                                   Text(
-                                                    '${request['quantite']} units',
+                                                    '${request['quantite']} unités',
                                                     style: const TextStyle(
                                                       color: Colors.grey,
                                                       fontSize: 14,
@@ -1024,7 +1018,7 @@ class _HomePageState extends State<HomePage> {
                                                                 Colors.black12),
                                                       ),
                                                       child: const Text(
-                                                          'View Details'),
+                                                          'Voir les Détails'),
                                                     ),
                                                   ),
                                                   const SizedBox(width: 16),
@@ -1039,7 +1033,7 @@ class _HomePageState extends State<HomePage> {
                                                             mainColor,
                                                       ),
                                                       child: const Text(
-                                                        'Accept',
+                                                        'Accepter',
                                                         style: TextStyle(
                                                             color:
                                                                 Colors.white),
@@ -1062,7 +1056,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0, // Home tab is selected
+        currentIndex: 0,
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         selectedItemColor: mainColor,
@@ -1147,13 +1141,13 @@ class _HomePageState extends State<HomePage> {
   String _getStatusText(String status) {
     switch (status.toLowerCase()) {
       case 'en_attente':
-        return 'PENDING';
+        return 'EN ATTENTE';
       case 'approuve':
-        return 'APPROVED';
+        return 'APPROUVÉ';
       case 'rejete':
-        return 'REJECTED';
+        return 'REJETÉ';
       case 'termine':
-        return 'COMPLETED';
+        return 'TERMINÉ';
       default:
         return status.toUpperCase();
     }

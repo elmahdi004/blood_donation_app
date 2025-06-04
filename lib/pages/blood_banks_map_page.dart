@@ -359,13 +359,12 @@ class _BloodBanksMapPageState extends State<BloodBanksMapPage> {
                   children: [
                     TileLayer(
                       urlTemplate:
-                          'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
+                          'https://api.mapbox.com/styles/v1/0udine/clvh4kwzf017l01qzct9u73bm/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiMHVkaW5lIiwiYSI6ImNsdmZ1Z3BwNTBiazMybW5weTI0YzBnZHkifQ.zvrWkMtWnChsFIe69mZ2Fg',
                       userAgentPackageName: 'com.example.blood_donation_app',
-                      // additionalOptions: {
-                      //   'accessToken': mapboxAccessToken,
-                      //   'styleId': mapboxStyleId,
-                      //   'userId': mapboxUserId,
-                      // },
+                      additionalOptions: {
+                        'accessToken': mapboxAccessToken,
+                        'id': 'mapbox.satellite',
+                      },
                     ),
                     MarkerLayer(
                       markers: bloodBanks.map((bank) {

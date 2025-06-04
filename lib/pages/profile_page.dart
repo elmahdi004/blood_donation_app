@@ -150,6 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            iconTheme: const IconThemeData(color: Colors.white),
             expandedHeight: 200,
             pinned: true,
             backgroundColor: mainColor,
@@ -257,14 +258,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 1.5,
+                    mainAxisSpacing: 0,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 1.3,
                     children: [
                       _buildStatCard(
                         'Dons Effectués',

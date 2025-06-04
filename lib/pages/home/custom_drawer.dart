@@ -60,7 +60,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error logging out: ${e.toString()}'),
+          content: Text('Erreur lors de la déconnexion: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -101,7 +101,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        _user?['nom'] + ' ' + _user?['prenom'] ?? 'User',
+                        _user?['nom'] + ' ' + _user?['prenom'] ?? 'Utilisateur',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -110,7 +110,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        _user?['email'] ?? 'user@example.com',
+                        _user?['email'] ?? 'utilisateur@exemple.com',
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
@@ -121,14 +121,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ),
           ListTile(
             leading: const Icon(Icons.home_outlined),
-            title: const Text('Home'),
+            title: const Text('Accueil'),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.location_on_outlined),
-            title: const Text('Blood Banks Map'),
+            title: const Text('Carte des Banques de Sang'),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -140,7 +140,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ),
           ListTile(
             leading: const Icon(Icons.history_outlined),
-            title: const Text('My Appointments'),
+            title: const Text('Mes Rendez-vous'),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -188,7 +188,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ),
           ListTile(
             leading: const Icon(Icons.settings_outlined),
-            title: const Text('Settings'),
+            title: const Text('Paramètres'),
             onTap: () {
               // Add navigation to settings
               Navigator.pop(context);
@@ -197,7 +197,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text('Logout', style: TextStyle(color: Colors.red)),
+            title:
+                const Text('Déconnexion', style: TextStyle(color: Colors.red)),
             onTap: _handleLogout,
           ),
         ],
