@@ -309,6 +309,8 @@ class _BloodBanksMapPageState extends State<BloodBanksMapPage> {
     );
   }
 
+  final String mapboxStyleId = 'streets-v11'; // or your custom style
+  final String mapboxUserId = 'mapbox';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -357,11 +359,13 @@ class _BloodBanksMapPageState extends State<BloodBanksMapPage> {
                   children: [
                     TileLayer(
                       urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
                       userAgentPackageName: 'com.example.blood_donation_app',
-                      additionalOptions: {
-                        'accessToken': mapboxAccessToken,
-                      },
+                      // additionalOptions: {
+                      //   'accessToken': mapboxAccessToken,
+                      //   'styleId': mapboxStyleId,
+                      //   'userId': mapboxUserId,
+                      // },
                     ),
                     MarkerLayer(
                       markers: bloodBanks.map((bank) {

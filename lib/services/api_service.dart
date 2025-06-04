@@ -311,4 +311,56 @@ class ApiService {
       throw Exception('Failed to send proposition: ${e.toString()}');
     }
   }
+
+  // Get user's donation intentions
+  Future<List<Map<String, dynamic>>> getMyDonations() async {
+    try {
+      final token = await getToken();
+      if (token == null) throw Exception('No token found');
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/my-intentions'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      print(response.body);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data
+            .map((donation) => Map<String, dynamic>.from(donation))
+            .toList();
+      } else {
+        throw Exception('Failed to fetch donations');
+      }
+    } catch (e) {
+      print('Error fetching donations: $e');
+      throw Exception('Failed to fetch donations: ${e.toString()}');
+    }
+  }
+
+  // Delete a donation intention
+  Future<void> deleteDonation(int donationId) async {
+    try {
+      final token = await getToken();
+      if (token == null) throw Exception('No token found');
+
+      final response = await http.delete(
+        Uri.parse('$baseUrl/donations/$donationId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        final data = json.decode(response.body);
+        throw Exception(data['message'] ?? 'Failed to delete donation');
+      }
+    } catch (e) {
+      print('Error deleting donation: $e');
+      throw Exception('Failed to delete donation: ${e.toString()}');
+    }
+  }
 }

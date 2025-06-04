@@ -7,6 +7,7 @@ import 'package:blood_donation_app/pages/blood_banks_map_page.dart';
 import 'package:blood_donation_app/pages/appointments_history_page.dart';
 import 'package:blood_donation_app/pages/intentions_de_dons_page.dart';
 import 'package:blood_donation_app/pages/blood_requests_page.dart';
+import 'package:blood_donation_app/pages/my_donations_page.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
@@ -158,6 +159,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => const IntentionsDeDonsPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.volunteer_activism),
+            title: const Text('Mes Intentions de Dons'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MyDonationsPage()),
               );
             },
           ),

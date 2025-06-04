@@ -1,2 +1,2 @@
 const mapboxAccessToken =
-    'pk.eyJ1IjoiYWxleG9yZ2VuIiwiYSI6ImNrcm91Z291MjB0Z28yd285Zm90Zm91Zm8ifQ.00000000000000000000000000000000';
+    'pk.eyJ1IjoiMHVkaW5lIiwiYSI6ImNsdmZ1Z3BwNTBiazMybW5weTI0YzBnZHkifQ.zvrWkMtWnChsFIe69mZ2Fg';
