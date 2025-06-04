@@ -313,8 +313,13 @@ class _BloodBanksMapPageState extends State<BloodBanksMapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Blood Banks Map'),
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          'Blood Banks Map',
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        ),
         centerTitle: true,
+        backgroundColor: mainColor,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

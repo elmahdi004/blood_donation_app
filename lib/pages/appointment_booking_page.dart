@@ -52,7 +52,12 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Prendre un rendez-vous'),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: mainColor,
+        title: const Text(
+          'Prendre un rendez-vous',
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        ),
         centerTitle: true,
       ),
       body: Column(
