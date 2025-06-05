@@ -192,34 +192,34 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const BloodGroupPage(),
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFDC2E2E),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                              ),
-                              child: const Text(
-                                'Verify',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ),
+                          // SizedBox(
+                          //   width: double.infinity,
+                          //   height: 50,
+                          //   child: ElevatedButton(
+                          //     onPressed: () {
+                          //       Navigator.push(
+                          //         context,
+                          //         MaterialPageRoute(
+                          //           builder: (context) =>
+                          //               const BloodGroupPage(),
+                          //         ),
+                          //       );
+                          //     },
+                          //     style: ElevatedButton.styleFrom(
+                          //       backgroundColor: const Color(0xFFDC2E2E),
+                          //       shape: RoundedRectangleBorder(
+                          //         borderRadius: BorderRadius.circular(25),
+                          //       ),
+                          //     ),
+                          //     child: const Text(
+                          //       'Verify',
+                          //       style: TextStyle(
+                          //         color: Colors.white,
+                          //         fontSize: 16,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                           const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

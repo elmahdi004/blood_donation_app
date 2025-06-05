@@ -6,6 +6,7 @@ import 'package:flutter/material.dart' show TimeOfDay;
 import 'auth_service.dart';
 import 'blood_request_service.dart';
 import 'proposition_service.dart';
+// import 'user_model.dart';
 
 class ApiService {
   final String baseUrl = 'http://10.0.2.2:8000/api';
@@ -361,6 +362,38 @@ class ApiService {
     } catch (e) {
       print('Error deleting donation: $e');
       throw Exception('Failed to delete donation: ${e.toString()}');
+    }
+  }
+
+  Future<Map<String, dynamic>> register(Map<String, String> userData) async {
+    try {
+      print(
+          'Sending registration request to: ${Uri.parse('$baseUrl/register')}');
+      print('Request data: $userData');
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/register'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(userData),
+      );
+
+      print('Response status code: ${response.statusCode}');
+      print('Response headers: ${response.headers}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        return data;
+      } else {
+        final error = jsonDecode(response.body);
+        throw Exception(error['message'] ?? 'Erreur lors de l\'inscription');
+      }
+    } catch (e) {
+      print('Registration error: $e');
+      throw Exception('Erreur de connexion: $e');
     }
   }
 }

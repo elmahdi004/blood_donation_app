@@ -317,8 +317,12 @@ class _BloodBanksMapPageState extends State<BloodBanksMapPage> {
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-          'Blood Banks Map',
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          'Centres de don',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         backgroundColor: mainColor,

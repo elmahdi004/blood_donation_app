@@ -1,16 +1,97 @@
 import 'package:blood_donation_app/constants.dart';
+import 'package:blood_donation_app/pages/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:blood_donation_app/pages/home/home_page.dart';
+import 'package:blood_donation_app/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddressPage extends StatefulWidget {
-  const AddressPage({super.key});
+  final Map<String, String> userData;
+
+  const AddressPage({
+    super.key,
+    required this.userData,
+  });
 
   @override
   State<AddressPage> createState() => _AddressPageState();
 }
 
 class _AddressPageState extends State<AddressPage> {
-  bool _showMap = true; // Toggle between map and manual input
+  final _formKey = GlobalKey<FormState>();
+  final _villeController = TextEditingController();
+  final _rueController = TextEditingController();
+  final _numeroController = TextEditingController();
+  final _detailsController = TextEditingController();
+  bool _isLoading = false;
+  late final ApiService _apiService;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApiService();
+  }
+
+  Future<void> _initializeApiService() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _apiService = ApiService(prefs);
+    });
+  }
+
+  Future<void> _register() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        String address =
+            '${_numeroController.text} ${_rueController.text}, ${_villeController.text}';
+        if (_detailsController.text.isNotEmpty) {
+          address += ', ${_detailsController.text}';
+        }
+
+        final userData = {
+          ...widget.userData,
+          'address': address,
+        };
+
+        await _apiService.register(userData);
+
+        if (!mounted) return;
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const Login()),
+          (route) => false,
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors de l\'inscription: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _villeController.dispose();
+    _rueController.dispose();
+    _numeroController.dispose();
+    _detailsController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +99,6 @@ class _AddressPageState extends State<AddressPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // App Bar with Back Button and Title
             Container(
               padding: const EdgeInsets.all(16),
               color: mainColor,
@@ -32,7 +112,7 @@ class _AddressPageState extends State<AddressPage> {
                       ),
                       const Expanded(
                         child: Text(
-                          'Address',
+                          'Adresse',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -42,21 +122,20 @@ class _AddressPageState extends State<AddressPage> {
                         ),
                       ),
                       const Text(
-                        '3/4',
+                        '3/3',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(width: 40), // To balance the back button
+                      const SizedBox(width: 40),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // Progress Bar
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
-                      4,
+                      3,
                       (index) => Container(
                         width: 60,
                         height: 4,
@@ -77,136 +156,24 @@ class _AddressPageState extends State<AddressPage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    // Toggle Buttons
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  _showMap = true;
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: _showMap
-                                    ? Colors.white
-                                    : Colors.white.withOpacity(0.1),
-                                foregroundColor: _showMap
-                                    ? const Color(0xFFDC2E2E)
-                                    : Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                              ),
-                              child: const Text('Map'),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  _showMap = false;
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: !_showMap
-                                    ? Colors.white
-                                    : Colors.white.withOpacity(0.1),
-                                foregroundColor: !_showMap
-                                    ? const Color(0xFFDC2E2E)
-                                    : Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                              ),
-                              child: const Text('Manual'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    if (_showMap) ...[
-                      // Map View
-                      const Icon(
-                        Icons.location_on,
-                        size: 100,
-                        color: Colors.white,
-                      ),
-                      const Spacer(),
-                      Container(
+                    Expanded(
+                      child: Container(
                         margin: const EdgeInsets.all(16),
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 280,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 50,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const HomePage(),
-                                    ),
-                                    (route) =>
-                                        false, // This removes all previous routes
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFDC2E2E),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Next',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ] else ...[
-                      // Manual Input View
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.all(16),
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                        child: Form(
+                          key: _formKey,
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
-                                TextField(
+                                TextFormField(
+                                  controller: _villeController,
                                   decoration: InputDecoration(
                                     prefixIcon: const Icon(Icons.location_city),
-                                    hintText: 'City',
+                                    hintText: 'Ville',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15),
                                       borderSide: BorderSide.none,
@@ -214,12 +181,19 @@ class _AddressPageState extends State<AddressPage> {
                                     filled: true,
                                     fillColor: const Color(0xFFF5F5F5),
                                   ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Veuillez entrer votre ville';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 const SizedBox(height: 20),
-                                TextField(
+                                TextFormField(
+                                  controller: _rueController,
                                   decoration: InputDecoration(
                                     prefixIcon: const Icon(Icons.apartment),
-                                    hintText: 'Street',
+                                    hintText: 'Rue',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15),
                                       borderSide: BorderSide.none,
@@ -227,12 +201,19 @@ class _AddressPageState extends State<AddressPage> {
                                     filled: true,
                                     fillColor: const Color(0xFFF5F5F5),
                                   ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Veuillez entrer votre rue';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 const SizedBox(height: 20),
-                                TextField(
+                                TextFormField(
+                                  controller: _numeroController,
                                   decoration: InputDecoration(
                                     prefixIcon: const Icon(Icons.home),
-                                    hintText: 'Building/House Number',
+                                    hintText: 'Numéro de Bâtiment/Maison',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15),
                                       borderSide: BorderSide.none,
@@ -240,13 +221,21 @@ class _AddressPageState extends State<AddressPage> {
                                     filled: true,
                                     fillColor: const Color(0xFFF5F5F5),
                                   ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Veuillez entrer le numéro';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 const SizedBox(height: 20),
-                                TextField(
+                                TextFormField(
+                                  controller: _detailsController,
                                   maxLines: 1,
                                   decoration: InputDecoration(
                                     prefixIcon: const Icon(Icons.description),
-                                    hintText: 'Additional Details (Optional)',
+                                    hintText:
+                                        'Détails Additionnels (Optionnel)',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15),
                                       borderSide: BorderSide.none,
@@ -260,31 +249,25 @@ class _AddressPageState extends State<AddressPage> {
                                   width: double.infinity,
                                   height: 50,
                                   child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const HomePage(),
-                                        ),
-                                        (route) =>
-                                            false, // This removes all previous routes
-                                      );
-                                    },
+                                    onPressed: _isLoading ? null : _register,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFFDC2E2E),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(25),
                                       ),
                                     ),
-                                    child: const Text(
-                                      'Next',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                    child: _isLoading
+                                        ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                        : const Text(
+                                            'S\'inscrire',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                   ),
                                 ),
                               ],
@@ -292,25 +275,27 @@ class _AddressPageState extends State<AddressPage> {
                           ),
                         ),
                       ),
-                    ],
-                    // Sign In Text
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                            'Already have an account? ',
+                            'Vous avez déjà un compte ? ',
                             style: TextStyle(
                               color: Colors.white70,
                             ),
                           ),
                           GestureDetector(
                             onTap: () {
-                              // Add navigation to sign in page
+                              Navigator.popUntil(
+                                context,
+                                (route) => route.isFirst,
+                              );
                             },
                             child: const Text(
-                              'Sign In!',
+                              'Se Connecter !',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

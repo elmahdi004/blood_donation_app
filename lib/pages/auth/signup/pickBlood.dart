@@ -3,7 +3,12 @@ import 'package:blood_donation_app/pages/auth/signup/address.dart';
 import 'package:blood_donation_app/constants.dart';
 
 class BloodGroupPage extends StatefulWidget {
-  const BloodGroupPage({super.key});
+  final Map<String, String> userData;
+
+  const BloodGroupPage({
+    super.key,
+    required this.userData,
+  });
 
   @override
   State<BloodGroupPage> createState() => _BloodGroupPageState();
@@ -12,6 +17,28 @@ class BloodGroupPage extends StatefulWidget {
 class _BloodGroupPageState extends State<BloodGroupPage> {
   String? selectedBloodGroup;
   String? selectedRhFactor;
+
+  void _navigateToAddress() {
+    if (selectedBloodGroup != null && selectedRhFactor != null) {
+      final updatedUserData = Map<String, String>.from(widget.userData);
+      updatedUserData['group_sanguin'] = '$selectedBloodGroup$selectedRhFactor';
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddressPage(userData: updatedUserData),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Veuillez sélectionner votre groupe sanguin et facteur Rh'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +61,7 @@ class _BloodGroupPageState extends State<BloodGroupPage> {
                       ),
                       const Expanded(
                         child: Text(
-                          'Pick Your Blood Group',
+                          'Choisissez votre groupe sanguin',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -44,13 +71,13 @@ class _BloodGroupPageState extends State<BloodGroupPage> {
                         ),
                       ),
                       const Text(
-                        '3/4',
+                        '2/3',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(width: 40), // To balance the back button
+                      const SizedBox(width: 40),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -58,13 +85,13 @@ class _BloodGroupPageState extends State<BloodGroupPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
-                      4,
+                      3,
                       (index) => Container(
                         width: 60,
                         height: 4,
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         decoration: BoxDecoration(
-                          color: index < 3
+                          color: index < 2
                               ? Colors.white
                               : Colors.white.withOpacity(0.5),
                           borderRadius: BorderRadius.circular(2),
@@ -124,14 +151,7 @@ class _BloodGroupPageState extends State<BloodGroupPage> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AddressPage(),
-                            ),
-                          );
-                        },
+                        onPressed: _navigateToAddress,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: mainColor,
                           shape: RoundedRectangleBorder(
@@ -139,7 +159,7 @@ class _BloodGroupPageState extends State<BloodGroupPage> {
                           ),
                         ),
                         child: const Text(
-                          'Next',
+                          'Suivant',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

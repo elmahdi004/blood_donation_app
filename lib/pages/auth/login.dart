@@ -1,3 +1,4 @@
+import 'package:blood_donation_app/constants.dart';
 import 'package:blood_donation_app/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -101,7 +102,7 @@ class _LoginState extends State<Login> {
                       ),
                       SizedBox(height: 20),
                       Text(
-                        'Hello! Welcome Back',
+                        'Bonjour ! Bienvenue',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 26,
@@ -110,7 +111,7 @@ class _LoginState extends State<Login> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Sign in to your account',
+                        'Connectez-vous à votre compte',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 16,
@@ -153,10 +154,10 @@ class _LoginState extends State<Login> {
                                 keyboardType: TextInputType.emailAddress,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter your email';
+                                    return 'Veuillez entrer votre email';
                                   }
                                   if (!value.contains('@')) {
-                                    return 'Please enter a valid email';
+                                    return 'Veuillez entrer un email valide';
                                   }
                                   return null;
                                 },
@@ -177,10 +178,10 @@ class _LoginState extends State<Login> {
                                 obscureText: _obscurePassword,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter your password';
+                                    return 'Veuillez entrer votre mot de passe';
                                   }
                                   if (value.length < 6) {
-                                    return 'Password must be at least 6 characters';
+                                    return 'Le mot de passe doit contenir au moins 6 caractères';
                                   }
                                   return null;
                                 },
@@ -198,7 +199,7 @@ class _LoginState extends State<Login> {
                                       });
                                     },
                                   ),
-                                  hintText: 'Password',
+                                  hintText: 'Mot de passe',
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(15),
                                     borderSide: BorderSide.none,
@@ -222,12 +223,12 @@ class _LoginState extends State<Login> {
                               },
                               activeColor: mainColor,
                             ),
-                            const Text('Remember me'),
+                            const Text('Se souvenir de moi'),
                             Spacer(),
                             TextButton(
                               onPressed: () {},
                               child: const Text(
-                                'Forget password?',
+                                'Forgot Password?',
                                 style: TextStyle(color: mainColor),
                               ),
                             ),
@@ -247,7 +248,7 @@ class _LoginState extends State<Login> {
                                 ? const CircularProgressIndicator(
                                     color: Colors.white)
                                 : const Text(
-                                    'Sign In',
+                                    'Se Connecter',
                                     style: TextStyle(
                                         fontSize: 18, color: Colors.white),
                                   ),
@@ -260,7 +261,7 @@ class _LoginState extends State<Login> {
                   Center(
                     child: RichText(
                       text: TextSpan(
-                        text: "Don't have an account? ",
+                        text: "Vous n'avez pas de compte ? ",
                         style: const TextStyle(
                             color: Colors.black54, fontSize: 16),
                         children: [
@@ -276,7 +277,7 @@ class _LoginState extends State<Login> {
                                 );
                               },
                               child: const Text(
-                                "Sign Up!",
+                                "S'inscrire !",
                                 style: TextStyle(
                                   color: mainColor,
                                   fontWeight: FontWeight.bold,

@@ -14,19 +14,21 @@ class _BodySplashState extends State<BodySplash> {
   int currentPage = 0;
   List<Map<String, String>> splashs = [
     {
-      'image': 'assets/images/splash_1.png',
-      'title': 'Welcome to BloodConnect',
-      'subtitle': 'Donate blood, save lives. Start making a difference today!'
+      'image': 'assets/images/splash-3.png',
+      'title': 'Bienvenue sur BloodConnect',
+      'subtitle':
+          'Donnez votre sang, sauvez des vies. Commencez à faire la différence dès aujourd\'hui !'
     },
     {
-      'image': 'assets/images/splash_2.png',
-      'title': 'Find Nearby Donors',
-      'subtitle': 'Quickly connect with blood donors near your location.'
+      'image': 'assets/images/splash-2.png',
+      'title': 'Trouvez des Donneurs à Proximité',
+      'subtitle':
+          'Connectez-vous rapidement avec des donneurs de sang près de chez vous.'
     },
     {
-      'image': 'assets/images/splash_3.png',
-      'title': 'Easy and Secure',
-      'subtitle': 'Your donations and requests are safe with us.'
+      'image': 'assets/images/splash-1.png',
+      'title': 'Simple et Sécurisé',
+      'subtitle': 'Vos dons et demandes sont en sécurité avec nous.'
     },
   ];
   @override
@@ -43,9 +45,9 @@ class _BodySplashState extends State<BodySplash> {
               // Handle skip action
             },
             child: Text(
-              'Skip',
+              'Passer',
               style: TextStyle(
-                color: Colors.black, // or whatever color you want
+                color: Colors.black,
                 fontSize: 16,
               ),
             ),
@@ -56,7 +58,7 @@ class _BodySplashState extends State<BodySplash> {
       body: Column(
         children: [
           Expanded(
-            flex: 4,
+            flex: 5,
             child: Container(
                 child: Center(
                     child: PageView.builder(
@@ -86,6 +88,7 @@ class _BodySplashState extends State<BodySplash> {
                                     color: Colors.black,
                                     fontWeight: FontWeight.w800,
                                     fontSize: 25),
+                                textAlign: TextAlign.center,
                               ),
                               Text(
                                 "${splashs[index]["subtitle"]}",
@@ -136,7 +139,7 @@ class _BodySplashState extends State<BodySplash> {
                         return const Login();
                       },
                     ));
-                  }, "Get Start")
+                  }, "Commencer")
                 ],
               ),
             ),
