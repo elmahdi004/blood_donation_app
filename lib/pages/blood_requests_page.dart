@@ -210,7 +210,7 @@ class _BloodRequestsPageState extends State<BloodRequestsPage>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildStatusBadge(status),
+                      // _buildStatusBadge(status),
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(

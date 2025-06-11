@@ -1,7 +1,3 @@
-import 'package:blood_donation_app/pages/auth/signup/address.dart';
-import 'package:blood_donation_app/pages/auth/signup/details.dart';
-import 'package:blood_donation_app/pages/auth/signup/otp.dart';
-import 'package:blood_donation_app/pages/home/home_page.dart';
 import 'package:blood_donation_app/pages/splash/First.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

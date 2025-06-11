@@ -167,7 +167,7 @@ class _MyDonationsPageState extends State<MyDonationsPage>
   }
 
   Widget _buildDonationCard(Map<String, dynamic> donation) {
-    final date = DateTime.parse(donation['created_at']);
+    final date = DateTime.parse(donation['date_disponibilite']);
     final formattedDate = DateFormat('dd MMM yyyy', 'fr_FR').format(date);
     final formattedTime = DateFormat('HH:mm').format(date);
 

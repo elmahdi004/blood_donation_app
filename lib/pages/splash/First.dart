@@ -15,7 +15,7 @@ class _BodySplashState extends State<BodySplash> {
   List<Map<String, String>> splashs = [
     {
       'image': 'assets/images/splash-3.png',
-      'title': 'Bienvenue sur BloodConnect',
+      'title': 'Bienvenue sur Qatrat Amal',
       'subtitle':
           'Donnez votre sang, sauvez des vies. Commencez à faire la différence dès aujourd\'hui !'
     },

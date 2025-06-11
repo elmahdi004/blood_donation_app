@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // API URL
-const String baseUrl = 'http://10.0.2.2:8000/api';
+const String baseUrl = 'http://192.168.223.232:8000/api';
 
 // Colors
 

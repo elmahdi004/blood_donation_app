@@ -6,10 +6,10 @@ import 'package:flutter/material.dart' show TimeOfDay;
 import 'auth_service.dart';
 import 'blood_request_service.dart';
 import 'proposition_service.dart';
+import './../constants.dart';
 // import 'user_model.dart';
 
 class ApiService {
-  final String baseUrl = 'http://10.0.2.2:8000/api';
   final SharedPreferences _prefs;
   final AuthService authService;
   final BloodRequestService bloodRequestService;

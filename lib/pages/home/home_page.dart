@@ -121,22 +121,22 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedStatus,
-                hint: const Text('Statut'),
-                items: [
-                  const DropdownMenuItem(value: null, child: Text('Tous')),
-                  ...['en_attente', 'approuve', 'rejete', 'termine']
-                      .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(_getStatusText(e)),
-                          ))
-                      .toList(),
-                ],
-                onChanged: (value) {
-                  setState(() => _selectedStatus = value);
-                },
-              ),
+              // DropdownButtonFormField<String>(
+              //   value: _selectedStatus,
+              //   hint: const Text('Statut'),
+              //   items: [
+              //     const DropdownMenuItem(value: null, child: Text('Tous')),
+              //     ...['en_attente', 'approuve', 'rejete', 'termine']
+              //         .map((e) => DropdownMenuItem(
+              //               value: e,
+              //               child: Text(_getStatusText(e)),
+              //             ))
+              //         .toList(),
+              //   ],
+              //   onChanged: (value) {
+              //     setState(() => _selectedStatus = value);
+              //   },
+              // ),
               const SizedBox(height: 16),
               DropdownButtonFormField<bool?>(
                 value: _urgentOnly,
@@ -213,7 +213,7 @@ class _HomePageState extends State<HomePage> {
             _buildDetailRow('Urgent', request['urgent'] == 1 ? 'Oui' : 'Non'),
             if (request['message'] != null)
               _buildDetailRow('Message', request['message']),
-            _buildDetailRow('Statut', _getStatusText(request['status'])),
+            // _buildDetailRow('Statut', _getStatusText(request['status'])),
             _buildDetailRow('Demandé par', request['requester']['name']),
             _buildDetailRow('Téléphone', request['requester']['phone']),
             const SizedBox(height: 20),
@@ -883,31 +883,31 @@ class _HomePageState extends State<HomePage> {
                                                     ),
                                                   ),
                                                   const SizedBox(width: 12),
-                                                  Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 6,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      color: _getStatusColor(
-                                                              request['status'])
-                                                          .withOpacity(0.1),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8),
-                                                    ),
-                                                    child: Text(
-                                                      _getStatusText(
-                                                          request['status']),
-                                                      style: TextStyle(
-                                                        color: _getStatusColor(
-                                                            request['status']),
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
+                                                  // Container(
+                                                  //   padding: const EdgeInsets
+                                                  //       .symmetric(
+                                                  //     horizontal: 12,
+                                                  //     vertical: 6,
+                                                  //   ),
+                                                  //   decoration: BoxDecoration(
+                                                  //     color: _getStatusColor(
+                                                  //             request['status'])
+                                                  //         .withOpacity(0.1),
+                                                  //     borderRadius:
+                                                  //         BorderRadius.circular(
+                                                  //             8),
+                                                  //   ),
+                                                  //   child: Text(
+                                                  //     _getStatusText(
+                                                  //         request['status']),
+                                                  //     style: TextStyle(
+                                                  //       color: _getStatusColor(
+                                                  //           request['status']),
+                                                  //       fontWeight:
+                                                  //           FontWeight.bold,
+                                                  //     ),
+                                                  //   ),
+                                                  // ),
                                                   if (request['urgent'] ==
                                                       1) ...[
                                                     const SizedBox(width: 12),

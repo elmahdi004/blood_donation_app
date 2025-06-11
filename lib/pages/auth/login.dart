@@ -88,19 +88,15 @@ class _LoginState extends State<Login> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                const Center(
+                Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'LOGO',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Image.asset(
+                        'assets/images/b_logo_.png',
+                        height: 80,
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       Text(
                         'Bonjour ! Bienvenue',
                         style: TextStyle(
@@ -228,7 +224,7 @@ class _LoginState extends State<Login> {
                             TextButton(
                               onPressed: () {},
                               child: const Text(
-                                'Forgot Password?',
+                                '',
                                 style: TextStyle(color: mainColor),
                               ),
                             ),

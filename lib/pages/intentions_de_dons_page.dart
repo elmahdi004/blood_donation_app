@@ -102,45 +102,45 @@ class _IntentionsDeDonsPageState extends State<IntentionsDeDonsPage>
     }
   }
 
-  Widget _buildStatusBadge(bool isValide) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isValide
-              ? [Colors.green.shade400, Colors.green.shade600]
-              : [Colors.orange.shade400, Colors.orange.shade600],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: (isValide ? Colors.green : Colors.orange).withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isValide ? Icons.check_circle : Icons.pending,
-            color: Colors.white,
-            size: 16,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            isValide ? 'Validé' : 'En attente',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildStatusBadge(bool isValide) {
+  //   return Container(
+  //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+  //     decoration: BoxDecoration(
+  //       gradient: LinearGradient(
+  //         colors: isValide
+  //             ? [Colors.green.shade400, Colors.green.shade600]
+  //             : [Colors.orange.shade400, Colors.orange.shade600],
+  //       ),
+  //       borderRadius: BorderRadius.circular(20),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: (isValide ? Colors.green : Colors.orange).withOpacity(0.3),
+  //           blurRadius: 8,
+  //           offset: const Offset(0, 2),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Row(
+  //       mainAxisSize: MainAxisSize.min,
+  //       children: [
+  //         Icon(
+  //           isValide ? Icons.check_circle : Icons.pending,
+  //           color: Colors.white,
+  //           size: 16,
+  //         ),
+  //         const SizedBox(width: 4),
+  //         Text(
+  //           isValide ? 'Validé' : 'En attente',
+  //           style: const TextStyle(
+  //             color: Colors.white,
+  //             fontWeight: FontWeight.bold,
+  //             fontSize: 12,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildBloodTypeBadge(String groupeSanguin) {
     return Container(
@@ -210,44 +210,44 @@ class _IntentionsDeDonsPageState extends State<IntentionsDeDonsPage>
                 children: [
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: intention['valide']
-                                ? [Colors.green.shade400, Colors.green.shade600]
-                                : [
-                                    Colors.orange.shade400,
-                                    Colors.orange.shade600
-                                  ],
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              intention['valide']
-                                  ? Icons.check_circle
-                                  : Icons.pending,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              intention['valide'] ? 'Validé' : 'En attente',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(
+                      //     horizontal: 12,
+                      //     vertical: 6,
+                      //   ),
+                      //   decoration: BoxDecoration(
+                      //     gradient: LinearGradient(
+                      //       colors: intention['valide']
+                      //           ? [Colors.green.shade400, Colors.green.shade600]
+                      //           : [
+                      //               Colors.orange.shade400,
+                      //               Colors.orange.shade600
+                      //             ],
+                      //     ),
+                      //     borderRadius: BorderRadius.circular(20),
+                      //   ),
+                      //   child: Row(
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: [
+                      //       Icon(
+                      //         intention['valide']
+                      //             ? Icons.check_circle
+                      //             : Icons.pending,
+                      //         color: Colors.white,
+                      //         size: 16,
+                      //       ),
+                      //       const SizedBox(width: 4),
+                      //       Text(
+                      //         intention['valide'] ? 'Validé' : 'En attente',
+                      //         style: const TextStyle(
+                      //           color: Colors.white,
+                      //           fontWeight: FontWeight.bold,
+                      //           fontSize: 12,
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -950,64 +950,64 @@ class _IntentionsDeDonsPageState extends State<IntentionsDeDonsPage>
                                             children: [
                                               Row(
                                                 children: [
-                                                  Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 6,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      gradient: LinearGradient(
-                                                        colors:
-                                                            intention['valide']
-                                                                ? [
-                                                                    Colors.green
-                                                                        .shade400,
-                                                                    Colors.green
-                                                                        .shade600
-                                                                  ]
-                                                                : [
-                                                                    Colors
-                                                                        .orange
-                                                                        .shade400,
-                                                                    Colors
-                                                                        .orange
-                                                                        .shade600
-                                                                  ],
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Icon(
-                                                          intention['valide']
-                                                              ? Icons
-                                                                  .check_circle
-                                                              : Icons.pending,
-                                                          color: Colors.white,
-                                                          size: 16,
-                                                        ),
-                                                        const SizedBox(
-                                                            width: 4),
-                                                        Text(
-                                                          intention['valide']
-                                                              ? 'Validé'
-                                                              : 'En attente',
-                                                          style:
-                                                              const TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
+                                                  // Container(
+                                                  //   padding: const EdgeInsets
+                                                  //       .symmetric(
+                                                  //     horizontal: 12,
+                                                  //     vertical: 6,
+                                                  //   ),
+                                                  //   decoration: BoxDecoration(
+                                                  //     gradient: LinearGradient(
+                                                  //       colors:
+                                                  //           intention['valide']
+                                                  //               ? [
+                                                  //                   Colors.green
+                                                  //                       .shade400,
+                                                  //                   Colors.green
+                                                  //                       .shade600
+                                                  //                 ]
+                                                  //               : [
+                                                  //                   Colors
+                                                  //                       .orange
+                                                  //                       .shade400,
+                                                  //                   Colors
+                                                  //                       .orange
+                                                  //                       .shade600
+                                                  //                 ],
+                                                  //     ),
+                                                  //     borderRadius:
+                                                  //         BorderRadius.circular(
+                                                  //             20),
+                                                  //   ),
+                                                  //   child: Row(
+                                                  //     mainAxisSize:
+                                                  //         MainAxisSize.min,
+                                                  //     children: [
+                                                  //       Icon(
+                                                  //         intention['valide']
+                                                  //             ? Icons
+                                                  //                 .check_circle
+                                                  //             : Icons.pending,
+                                                  //         color: Colors.white,
+                                                  //         size: 16,
+                                                  //       ),
+                                                  //       const SizedBox(
+                                                  //           width: 4),
+                                                  //       Text(
+                                                  //         intention['valide']
+                                                  //             ? 'Validé'
+                                                  //             : 'En attente',
+                                                  //         style:
+                                                  //             const TextStyle(
+                                                  //           color: Colors.white,
+                                                  //           fontWeight:
+                                                  //               FontWeight.bold,
+                                                  //           fontSize: 12,
+                                                  //         ),
+                                                  //       ),
+                                                  //     ],
+                                                  //   ),
+                                                  // ),
                                                 ],
                                               ),
                                               const SizedBox(height: 20),
